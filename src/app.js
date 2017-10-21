@@ -1,25 +1,51 @@
 class IndecisionApp extends React.Component {
   
   constructor(props) {
-    //BOILERPLATE: need to call super(props) to ensure that references to React don't break due to method overloading.
+    /*
+    BOILERPLATE: We call super(props) to ensure that we don't lose internal 
+    "props" references created by React when the class is instantiated.
+    */
     super(props);
 
-    /*as opposed to binding in button onClick, this approach ensures that bind is only called once, when the
-    component is first initialized. It does not need to be re-bound every time the component renders, as 
-    future references will reference the new binding already in memory. This is far less expensive/more efficient. */
+    /*
+    PROBLEM: Methods are bound to class instances. When the function reference is passed
+    down via props, its lexical scope changes, and it runs in the context of the component 
+    that called it in its "onClick" handler. As a result, the "this" value runs in a different 
+    context than originally intended. In the handleDeleteOptions method, we reference try to
+    log "this.props.options" but "this" is not bound in this context, and we receive an error 
+    indicating that we cannot access the property "props" of undefined.
+
+    SOLUTION: Chain the "bind" method onto the function call in the "onClick" handler. The 
+    .bind() method, when it executes at runtime, allows "this" to be manually bound. 
+
+    ADD'L INFO: When we add .bind() onto the function call in the "onClick" handler, it may 
+    become expensive, as "this" will be rebound every time the component re-renders. To avoid 
+    this otherwise expensive process, we call it only once on the highest component possible in 
+    the hierarchy. Future function calls will simply access the bound function already in memory.
+    */
     this.handleDeleteOptions = this.handleDeleteOptions.bind(this);
     this.handlePick = this.handlePick.bind(this);
     this.handleAddOption = this.handleAddOption.bind(this);
+    this.handleDeleteOption = this.handleDeleteOption.bind(this);
 
     this.state = {
       options: props.options
     }
   }
+
+  handleDeleteOption(option) {
+    console.log('hdo', option);
+  }
   
   handleDeleteOptions() {
-    /*Shorthand syntax for setState using arrow functions. Can implicity return values, but when returning an object 
-    the parser treats anything in the braces as the function body. To work around this, we wrap the object in parentheses
-    causing the interpreter to treat it as if it were an expression, the result of which can implicitly return the object*/
+    /*
+    PROBLEM: We want to take advantage of implicit return when using arrow functions, 
+    but the parser treats the first set of braces as the function body. How do we
+    implicitly return an object?
+    
+    SOLUTION: We wrap the object in parentheses causing the interpreter to treat it as 
+    an expression, the result of which is the ojbect, and can be implicitly returned.
+    */
     this.setState(() => ({options: []}));
   }
 
@@ -54,6 +80,7 @@ class IndecisionApp extends React.Component {
         <Options 
           options={this.state.options} 
           handleDeleteOptions={this.handleDeleteOptions}
+          handleDeleteOption={this.handleDeleteOption}
         />
         <AddOption 
           handleAddOption={this.handleAddOption}
@@ -98,7 +125,20 @@ const Options = (props) => {
     <div>
       <button onClick={props.handleDeleteOptions}>Remove All</button>
       {
-        props.options.map(option => <Option key={option} optionText={option} />)
+        /*
+        PROBLEM: We want to break JSX into multiple lines, but retain cleanliness
+        offered by arrow function implicit return.
+
+        SOLUTION: Use multi-line expressions allow the JSX element to still be 
+        implicitly returned.
+        */
+        props.options.map(option => (
+          <Option 
+            key={option} 
+            optionText={option} 
+            handleDeleteOption={props.handleDeleteOption}
+          />
+        ))
       }
     </div>
   );
@@ -108,6 +148,28 @@ const Option = (props) => {
   return (
     <div>
       {props.optionText}
+      <button 
+        /*
+        PROBLEM: When "Delete" button is clicked, we wnant to pass data to the handler
+        function. But using "onClick={props.handleDeleteOption()}" would call the function
+        at runtime. How do we pass data into the fucntion without running it?
+        
+        SOLUTION: We define a new function to wrap the function we want to call. Within
+        this function we are free to add arguments, as this function will not be called at
+        runtime.
+        
+        PERSPECTIVE: Ensure that you do not think of the data being passed up the chain. 
+        This is not what is happening. What is actually happening is that the function 
+        reference is being passed down to the child element. Also, think of this function
+        wrapping approach as the opposite of an IIFE.
+
+        ADD'L INFO: When a button element is clicked, the first element passed to a
+        function called in "onClick" is the event object.
+        */
+        onClick={(e) => {
+          props.handleDeleteOption(props.optionText)
+        }}
+      >Delete</button>
     </div>
   );
 };
