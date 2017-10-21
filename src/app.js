@@ -17,9 +17,10 @@ class IndecisionApp extends React.Component {
   }
   
   handleDeleteOptions() {
-    this.setState(() => {
-      return {options: []}
-    });
+    /*Shorthand syntax for setState using arrow functions. Can implicity return values, but when returning an object 
+    the parser treats anything in the braces as the function body. To work around this, we wrap the object in parentheses
+    causing the interpreter to treat it as if it were an expression, the result of which can implicitly return the object*/
+    this.setState(() => ({options: []}));
   }
 
   handlePick() {
@@ -35,11 +36,9 @@ class IndecisionApp extends React.Component {
       return 'This option already exist';
     }
 
-    this.setState(prevState => {
-      return {
-        options: prevState.options.concat(option)
-      };
-    });
+    this.setState(prevState => ({
+      options: prevState.options.concat(option)
+    }));
   }
 
   render() {
@@ -120,9 +119,7 @@ class AddOption extends React.Component {
 
     this.handleAddOption = this.handleAddOption.bind(this);
 
-    this.state = {
-      error: undefined
-    };
+    this.state = {error: undefined};
   }
   
   handleAddOption(e) {
@@ -132,9 +129,7 @@ class AddOption extends React.Component {
     const error = this.props.handleAddOption(option);
     e.target.elements.option.value = '';
 
-    this.setState(() => {
-      return {error}
-    });
+    this.setState(() => ({error}));
   }
 
   render() {
