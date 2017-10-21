@@ -22,7 +22,9 @@ var IndecisionApp = function (_React$Component) {
     log "this.props.options" but "this" is not bound in this context, and we receive an error 
     indicating that we cannot access the property "props" of undefined.
       SOLUTION: Chain the "bind" method onto the function call in the "onClick" handler. The 
-    .bind() method, when it executes at runtime, allows "this" to be manually bound. 
+    .bind() method, when it executes at runtime, allows "this" to be manually bound. Because 
+    "this" is bound correctly in the "render" method, we can bind the correct "this" by passing 
+    it as the argument to .bind().
       ADD'L INFO: When we add .bind() onto the function call in the "onClick" handler, it may 
     become expensive, as "this" will be rebound every time the component re-renders. To avoid 
     this otherwise expensive process, we call it only once on the highest component possible in 
