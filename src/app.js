@@ -1,14 +1,47 @@
 class IndecisionApp extends React.Component {
+  constructor(props) {
+    //BOILERPLATE: need to call super(props) to ensure that references to React don't break due to method overloading.
+    super(props);
+
+    /*as opposed to binding in button onClick, this approach ensures that bind is only called once, when the
+    component is first initialized. It does not need to be re-bound every time the component renders, as 
+    future references will reference the new binding already in memory. This is far less expensive/more efficient. */
+    this.handleDeleteOptions = this.handleDeleteOptions.bind(this);
+    this.handlePick = this.handlePick.bind(this);
+
+    this.state = {
+      options: ['thing one', 'thing two', 'thing three']
+    }
+  }
+  
+  handleDeleteOptions() {
+    this.setState(() => {
+      return {options: []}
+    });
+  }
+
+  handlePick() {
+    const randomNum = Math.floor(Math.random() * this.state.options.length);
+    const option = this.state.options[randomNum];
+    alert(option);
+  };
+  
+
   render() {
     const title = 'Indecision';
     const subtitle = 'Put your life in the hands of a computer.';
-    const options = ['thing one', 'thing two', 'thing three'];
     
     return (
       <div>
         <Header title={title} subtitle={subtitle} />
-        <Action />
-        <Options options={options}/>
+        <Action 
+          hasOptions={this.state.options.length > 0} 
+          handlePick={this.handlePick}
+        />
+        <Options 
+          options={this.state.options} 
+          handleDeleteOptions={this.handleDeleteOptions}
+        />
         <AddOption />
       </div>
     );
@@ -27,37 +60,27 @@ class Header extends React.Component {
 }
 
 class Action extends React.Component {
-  handlePick() {
-    alert('handlePick');
-  }
   
   render() {
     return (
       <div>
-        <button onClick={this.handlePick}>What should I do?</button>
+        <button 
+          disabled={!this.props.hasOptions} 
+          onClick={this.props.handlePick}
+        >
+          What should I do?
+        </button>
       </div>
     );
   }
 }
 
 class Options extends React.Component {
-  constructor(props) {
-    //BOILERPLATE: need to call super(props) to ensure that references to React don't break due to method overloading.
-    super(props);
-    /*as opposed to binding in button onClick, this approach ensures that bind is only called once, when the
-    component is first initialized. It does not need to be re-bound every time the component renders, as 
-    future references will reference the new binding already in memory. This is far less expensive/more efficient. */
-    this.handleRemoveAll = this.handleRemoveAll.bind(this);
-  }
-
-  handleRemoveAll() {
-    alert('removeAll');
-  }
 
   render() {
     return (
       <div>
-        <button onClick={this.handleRemoveAll}>Remove All</button>
+        <button onClick={this.props.handleDeleteOptions}>Remove All</button>
         {
           this.props.options.map(option => <Option key={option} optionText={option} />)
         }
