@@ -5,40 +5,60 @@ import Header from './Header';
 import Options from './Options';
 
 export default class IndecisionApp extends React.Component {
+  /*
+  PROBLEM: Due to lexical scope changing when passing down functions in props to 
+  child components, we "bind" "this" in constructor to manually define "this" 
+  reference on execution, i.e. for example, when "onClick" fires handler fucntion 
+  passed down via props. However, continually binding this to event handlers that 
+  are to be passed down to props was beocming quite verbose, and tedious.
   
-  constructor(props) {
+  SOLUTION: We installed and configured babel-plugin-transform-class-properties 
+  plugin for babel, and can now use instance variables, and arrow functions in 
+  class definitions. Arrow functions do not bind this, so no manual override is 
+  required. Furthermore, rather than define state in the constructor we can instead 
+  define it as an instance property, avoiding the need for a constructor function 
+  entirely.
+
+  ADD'L INFO: See comments in IndecisionApp class constructor in the 
+  pre-cls-prop-IndecisionApp.js file in React-Playground folder.
+  */
+
+  state = { options: [] };
+
+  handleDeleteOption = (optionToRemove) => {
+    this.setState((prevState) => ({
+      options: prevState.options.filter(option => optionToRemove !== option)
+    }));
+  }
+  
+  handleDeleteOptions = () => {
     /*
-    BOILERPLATE: We call super(props) to ensure that we don't lose internal 
-    "props" references created by React when the class is instantiated.
+    PROBLEM: We want to take advantage of implicit return when using arrow functions, 
+    but the parser treats the first set of braces as the function body. How do we
+    implicitly return an object?
+    
+    SOLUTION: We wrap the object in parentheses causing the interpreter to treat it as 
+    an expression, the result of which is the ojbect, and can be implicitly returned.
     */
-    super(props);
+    this.setState(() => ({options: []}));
+  }
 
-    /*
-    PROBLEM: Methods are bound to class instances. When the function reference is passed
-    down via props, its lexical scope changes, and it runs in the context of the component 
-    that called it in its "onClick" handler. As a result, the "this" value runs in a different 
-    context than originally intended. In the handleDeleteOptions method, we reference try to
-    log "this.props.options" but "this" is not bound in this context, and we receive an error 
-    indicating that we cannot access the property "props" of undefined.
-
-    SOLUTION: Chain the "bind" method onto the function call in the "onClick" handler. The 
-    .bind() method, when it executes at runtime, allows "this" to be manually bound. Because 
-    "this" is bound correctly in the "render" method, we can bind the correct "this" by passing 
-    it as the argument to .bind().
-
-    ADD'L INFO: When we add .bind() onto the function call in the "onClick" handler, it may 
-    become expensive, as "this" will be rebound every time the component re-renders. To avoid 
-    this otherwise expensive process, we call it only once on the highest component possible in 
-    the hierarchy. Future function calls will simply access the bound function already in memory.
-    */
-    this.handleDeleteOptions = this.handleDeleteOptions.bind(this);
-    this.handlePick = this.handlePick.bind(this);
-    this.handleAddOption = this.handleAddOption.bind(this);
-    this.handleDeleteOption = this.handleDeleteOption.bind(this);
-
-    this.state = {
-      options: []
+  handlePick = () => {
+    const randomNum = Math.floor(Math.random() * this.state.options.length);
+    const option = this.state.options[randomNum];
+    alert(option);
+  };
+  
+  handleAddOption = (option) => {
+    if(!option) {
+      return 'Enter valid value to add item.';
+    } else if (this.state.options.indexOf(option) > -1) {
+      return 'This option already exist';
     }
+
+    this.setState(prevState => ({
+      options: prevState.options.concat(option)
+    }));
   }
 
   componentDidMount() {
@@ -63,42 +83,6 @@ export default class IndecisionApp extends React.Component {
 
   componentWillUnmount() {
     console.log('Component will unmount.');
-  }
-
-  handleDeleteOption(optionToRemove) {
-    this.setState((prevState) => ({
-      options: prevState.options.filter(option => optionToRemove !== option)
-    }));
-  }
-  
-  handleDeleteOptions() {
-    /*
-    PROBLEM: We want to take advantage of implicit return when using arrow functions, 
-    but the parser treats the first set of braces as the function body. How do we
-    implicitly return an object?
-    
-    SOLUTION: We wrap the object in parentheses causing the interpreter to treat it as 
-    an expression, the result of which is the ojbect, and can be implicitly returned.
-    */
-    this.setState(() => ({options: []}));
-  }
-
-  handlePick() {
-    const randomNum = Math.floor(Math.random() * this.state.options.length);
-    const option = this.state.options[randomNum];
-    alert(option);
-  };
-  
-  handleAddOption(option) {
-    if(!option) {
-      return 'Enter valid value to add item.';
-    } else if (this.state.options.indexOf(option) > -1) {
-      return 'This option already exist';
-    }
-
-    this.setState(prevState => ({
-      options: prevState.options.concat(option)
-    }));
   }
 
   render() {
