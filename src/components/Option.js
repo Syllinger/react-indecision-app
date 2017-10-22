@@ -21,6 +21,7 @@ const Option = (props) => (
       ADD'L INFO: When a button element is clicked, the first element passed to a
       function called in "onClick" is the event object.
       */
+      className="button button--link"
       onClick={(e) => {
         props.handleDeleteOption(props.optionText)
       }}
