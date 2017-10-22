@@ -3,6 +3,7 @@ import AddOption from './AddOption';
 import Action from './Action';
 import Header from './Header';
 import Options from './Options';
+import OptionModal from './OptionModal';
 
 export default class IndecisionApp extends React.Component {
   /*
@@ -23,7 +24,10 @@ export default class IndecisionApp extends React.Component {
   pre-cls-prop-IndecisionApp.js file in React-Playground folder.
   */
 
-  state = { options: [] };
+  state = { 
+    options: [],
+    selectedOption: undefined 
+  };
 
   handleDeleteOption = (optionToRemove) => {
     this.setState((prevState) => ({
@@ -40,14 +44,18 @@ export default class IndecisionApp extends React.Component {
     SOLUTION: We wrap the object in parentheses causing the interpreter to treat it as 
     an expression, the result of which is the ojbect, and can be implicitly returned.
     */
-    this.setState(() => ({options: []}));
+    this.setState(() => ( {options: []} ));
   }
 
   handlePick = () => {
     const randomNum = Math.floor(Math.random() * this.state.options.length);
     const option = this.state.options[randomNum];
-    alert(option);
+    this.setState(() => ( {selectedOption: option} ));
   };
+
+  handleClearSelectedOption = () => {
+    this.setState(() => ( {selectedOption: undefined} ));
+  }
   
   handleAddOption = (option) => {
     if(!option) {
@@ -66,7 +74,7 @@ export default class IndecisionApp extends React.Component {
       const json = localStorage.getItem('options');
       const options = JSON.parse(json);
       if (options) {
-        this.setState(() => ({options}));
+        this.setState(() => ( {options} ));
       }
     } catch(e) {
 
@@ -102,6 +110,10 @@ export default class IndecisionApp extends React.Component {
         />
         <AddOption 
           handleAddOption={this.handleAddOption}
+        />
+        <OptionModal 
+          selectedOption={this.state.selectedOption}
+          handleClearSelectedOption={this.handleClearSelectedOption}
         />
       </div>
     );
