@@ -1,8 +1,10 @@
 html {
+  //converts rem units from base 16 to base 10
   font-size: 62.5%;
 }
 
 body {
+  background: $dark-blue;
   font-family: Helvetica, Arial, sans-serif;
-  font-size: 1.6rem;
+  font-size: $m-size;
 }
