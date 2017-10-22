@@ -5,7 +5,7 @@
   color: white;
   font-size: $l-size;
   font-weight: bold;
-  margin-bottom: $xl-size;
+  margin-bottom: $m-size;
   padding: 2.4rem;
   width: 100%;
 }
@@ -28,4 +28,10 @@
   border: 0;
   color: $off-white;
   padding: 0;
+}
+
+@medai (min-width: $desktop-breakpoint) {
+  .big-button {
+    margin-bottom: $xl-size;
+  }
 }
