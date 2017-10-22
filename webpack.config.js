@@ -12,8 +12,8 @@ module.exports = {
       test: /\.js$/,
       exclude: /node_modules/
     }, {
-      test: /\.css$/,
-      use: ['style-loader', 'css-loader']
+      test: /\.scss$/,
+      use: ['style-loader', 'css-loader', 'sass-loader']
     }]
   },
   devtool: 'cheap-module-eval-source-map',
