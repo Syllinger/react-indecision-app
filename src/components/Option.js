@@ -1,8 +1,8 @@
 import React from 'react';
 
 const Option = (props) => (
-  <div>
-    {props.optionText}
+  <div className="option">
+    <p className="option__text">{props.count}. {props.optionText}</p>
     <button 
       /*
       PROBLEM: When "Delete" button is clicked, we wnant to pass data to the handler
@@ -25,7 +25,7 @@ const Option = (props) => (
       onClick={(e) => {
         props.handleDeleteOption(props.optionText)
       }}
-    >Delete</button>
+    >Remove</button>
   </div>
 );
 

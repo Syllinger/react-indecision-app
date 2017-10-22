@@ -20,10 +20,11 @@ const Options = (props) => (
       SOLUTION: Use multi-line expressions allow the JSX element to still be 
       implicitly returned.
       */
-      props.options.map(option => (
+      props.options.map((option, index) => (
         <Option 
           key={option} 
           optionText={option} 
+          count={index + 1}
           handleDeleteOption={props.handleDeleteOption}
         />
       ))
